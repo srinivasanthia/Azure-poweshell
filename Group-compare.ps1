@@ -1,6 +1,8 @@
+# purpose for this script to read group membership of all the user belongs to old domain and and update the same group membership in new domain as well.
 $olddomainname = "newazuretest.tk"
 $Newdomainname = "azuredomain.ml"
 
+#get all users from old domain.
 $users = Get-AzureADUser | where-object { $_.userprincipalname -match "$olddomainname"}
 
 foreach( $user in $users)
