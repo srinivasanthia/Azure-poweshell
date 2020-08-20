@@ -1,4 +1,7 @@
-$users = Get-AzureADUser | where-object { $_.userprincipalname -match "newazuretest.tk"}
+$olddomainname = "newazuretest.tk"
+$Newdomainname = "azuredomain.ml"
+
+$users = Get-AzureADUser | where-object { $_.userprincipalname -match "$olddomainname"}
 
 foreach( $user in $users)
 
@@ -10,7 +13,7 @@ $userdisplayname = $user.DisplayName
 $sourcegroups = Get-AzureADUserMembership -ObjectId "$userid" -All $true
 $sourceobj =$sourcegroups | Select-Object objectid
 
-$targetgroups = Get-AzureADUserMembership -ObjectId "$userdisplayname@azuredomain.ml" -All $true
+$targetgroups = Get-AzureADUserMembership -ObjectId "$userdisplayname@$Newdomainname" -All $true
 
 $targetobj =$targetgroups| Select-Object objectid
 
@@ -21,8 +24,8 @@ $missingsGroups = Compare-Object -ReferenceObject $targetobj -IncludeEqual $sour
 
 for ($i=0; $i -lt $missingsGroups.count; $i++)
 {
-$groupobjectid= $missingsGroups[0].InputObject.ObjectId
-Add-AzureADGroupMember -ObjectId "$groupobjectid" -RefObjectId "azcopy@azuredomain.ml"
+$groupobjectid= $missingsGroups[$i].InputObject.ObjectId
+Add-AzureADGroupMember -ObjectId "$groupobjectid" -RefObjectId "$userdisplayname@$Newdomainname"
 
 }
 
